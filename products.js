@@ -20,7 +20,7 @@ const CATEGORIES = [
   { name: "Pants", desc: "Per ogni occasione.",         icon: "👖", art: "👖", color: "#ff8a7a" },
   { name: "Jackets",   desc: "Caldo e di tendenza.",        icon: "🧥", art: "🧥", color: "#9be8a8" },
   { name: "Shoes",    desc: "Fai il passo giusto.",        icon: "👟", art: "👟", color: "#b794ff" },
-  { name: "Electronic devices", desc: "Piccoli dettagli. Grande effetto.", icon: "🧢", art: "", color: "#ffb27a" }
+  { name: "Electronic devices", desc: "Piccoli dettagli. Grande effetto.", icon: "", art: "", color: "#ffb27a" }
 ];
 
 // ====== CATALOGO ======
