@@ -221,7 +221,7 @@ function buildMessage() {
     return `- ${p.name} (${p.brand}) x${i.qty}`;
   });
   const total = state.cart.reduce((s, i) => s + PRODUCTS.find(x => x.id === i.id).price * i.qty, 0);
-  return `Ciao, sono ${name} e vorrei informazioni su:\n${lines.join("\n")}\nTotale indicativo: ${fmt(total)}`;
+  return `Ciao, sono ${name} e vorrei questi articolui:\n${lines.join("\n")}\nTotale indicativo: ${fmt(total)}`;
 }
 
 function updateLinks() {

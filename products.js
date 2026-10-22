@@ -1,7 +1,7 @@
 // ====== CONFIGURAZIONE ======
 // Cambia questi dati con i tuoi.
 const CONFIG = {
-  shopName: "VYRON X",
+  shopName: "bader prova",
   whatsapp: "3715464615",          // numero con prefisso, senza + e senza spazi
   email: "Baderloumaissi@gmail.com",
   currency: "€",
