@@ -51,7 +51,7 @@ img { max-width: 100%; }
   background:
     linear-gradient(90deg, #07070b 8%, rgba(7,7,11,.55) 55%, rgba(7,7,11,.2) 100%),
     var(--hero-img) center right / cover no-repeat,
-    radial-gradient(circle at 80% 30%, rgba(125,92,255,.45), transparent 55%),
+    radial-gradient(circle at 80% 30%, #7d5cff73, transparent 55%),
     radial-gradient(circle at 60% 90%, rgba(255,120,200,.25), transparent 50%),
     #0b0b12;
   border-bottom: 1px solid var(--line);

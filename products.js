@@ -15,20 +15,20 @@ const CONFIG = {
 // ====== CATEGORIE ======
 // icon = emoji piccola, art = emoji grande (o "image": "img/cat.png"), color = colore del riquadro
 const CATEGORIES = [
-  { name: "T-shirts", desc: "Look freschi. Ogni giorno.",  icon: "👕", art: "👕", color: "#ffe08a" },
-  { name: "Sweatshirts",     desc: "Comfort e stile.",            icon: "🧥", art: "🧥", color: "#a9d8ff" },
-  { name: "Pants", desc: "Per ogni occasione.",         icon: "👖", art: "👖", color: "#ff8a7a" },
-  { name: "Jackets",   desc: "Caldo e di tendenza.",        icon: "🧥", art: "🧥", color: "#9be8a8" },
-  { name: "Shoes",    desc: "Fai il passo giusto.",        icon: "👟", art: "👟", color: "#b794ff" },
-  { name: "Electronic devices", desc: "Piccoli dettagli. Grande effetto.", icon: "", art: "", color: "#ffb27a" }
+  { name: "T-shirts", desc: "Look freschi. Ogni giorno.",  icon: "",image: "img/nike.png" , color: "#ffe08a" },
+  { name: "Hoodie",     desc: "Comfort e stile.",            icon: "", image: "img/nike1.png" , color: "#a9d8ff" },
+  { name: "Pants", desc: "Per ogni occasione.",         icon: "", image: "img/nike2.png" , color: "#ff8a7a" },
+  { name: "Jackets",   desc: "Caldo e di tendenza.",        icon: "", image: "img/nike3.png" , color: "#9be8a8" },
+  { name: "Shoes",    desc: "Fai il passo giusto.",        icon: "",image:  "img/nike4.png", color: "#b794ff" },
+  { name: "Electronic devices", desc: "Piccoli dettagli. Grande effetto.", icon: "", image:  "img/acces.png", color: "#ffb27a" }
 ];
 
 // ====== CATALOGO ======
 // tags: "new" = appare in Novità, "best" = appare in Prodotti in evidenza (puoi metterli entrambi)
 // "image": link o file nella cartella "img/" (es. "img/prodotto1.jpg"). Vuoto = segnaposto.
 const PRODUCTS = [
-  { id: 1,  name: "Prodotto 1",  brand: "NIKE ", category: "Magliette", price: 25,  tags: ["new"],         image: "", description: "Descrizione del prodotto 1." },
-  { id: 2,  name: "Prodotto 2",  brand: "SP5DER ", category: "Felpe",     price: 45,  tags: ["best"],        image: "", description: "Descrizione del prodotto 2." },
+  { id: 1,  name: "",  brand: "NIKE ", category: "Magliette", price: 25,  tags: ["new"],         image: "", description: "Descrizione del prodotto 1." },
+  { id: 2,  name: "Felpa Sp5der Wait Web grigio ardesia",  brand: "SP5DER ", category: "Felpe",     price: 45,  tags: ["best"],        image: "img/sp5der.png", description: "La felpa Sp5der Wait Web grigio ardesia è una felpa del pacchetto Sp5der Wait Web in una colorway grigio ardesia." },
   { id: 3,  name: "Prodotto 3",  brand: "SUPREME", category: "Pantaloni", price: 55,  tags: ["new","best"],  image: "", description: "Descrizione del prodotto 3." },
   { id: 4,  name: "Prodotto 4",  brand: "CHROME HEARTS", category: "Magliette", price: 30,  tags: ["best"],        image: "", description: "Descrizione del prodotto 4." },
   { id: 5,  name: "Prodotto 5",  brand: "PURPLE BRAND", category: "Giacche",   price: 90,  tags: ["new"],         image: "", description: "Descrizione del prodotto 5." },
