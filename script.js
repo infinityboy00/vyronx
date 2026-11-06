@@ -22,24 +22,61 @@ function placeholder(p) {
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
 
+/* ---------- Taglie, colori, immagini ---------- */
+const DEFAULT_SIZES = {
+  clothes: ["XS", "S", "M", "L", "XL", "XXL"],
+  shoes: ["36", "37", "38", "39", "40", "41", "42", "43", "44", "45"]
+};
+// Taglie: usa p.sizes se presente (anche [] = nessuna taglia), altrimenti default per categoria
+function sizesOf(p) {
+  if (Array.isArray(p.sizes)) return p.sizes;
+  const c = (p.category || "").toLowerCase();
+  if (/scarpe|shoes/.test(c)) return DEFAULT_SIZES.shoes;
+  if (/accessori|electronic/.test(c)) return [];
+  return DEFAULT_SIZES.clothes;
+}
+function colorsOf(p) { return Array.isArray(p.colors) ? p.colors : []; }
+// Immagini da mostrare: quelle del colore scelto, oppure p.images / p.image
+function imagesOf(p, colorIdx = 0) {
+  const col = colorsOf(p)[colorIdx];
+  let list = [];
+  if (col) list = col.images || (col.image ? [col.image] : []);
+  if (!list.length && Array.isArray(p.images)) list = p.images;
+  if (!list.length && p.image) list = [p.image];
+  return list.length ? list : [placeholder(p)];
+}
+function fallbackImg(img, p) {
+  img.addEventListener("error", () => { img.onerror = null; img.src = placeholder(p); }, { once: true });
+}
+
 /* ---------- Card prodotto ---------- */
 function makeCard(p) {
   const card = document.createElement("article");
   card.className = "card";
   const badge = p.tags && p.tags.includes("new") ? '<span class="tag">Novità</span>' : "";
   const liked = state.wish.includes(p.id);
+  const colors = colorsOf(p);
+  const needsChoice = sizesOf(p).length > 0 || colors.length > 0;
+  const dots = colors.length > 1
+    ? `<div class="card-colors">${colors.map(c => `<i style="--c:${c.hex || "#888"}" title="${c.name}"></i>`).join("")}</div>`
+    : "";
   card.innerHTML = `
     ${badge}
     <button class="heart${liked ? " on" : ""}" aria-label="Preferito">${liked ? "♥" : "♡"}</button>
-    <img src="${p.image || placeholder(p)}" alt="${p.name}" loading="lazy">
+    <img src="${imagesOf(p, 0)[0]}" alt="${p.name}" loading="lazy">
     <div class="card-body">
       <small>${p.brand} · ${p.category}</small>
       <h4>${p.name}</h4>
+      ${dots}
       <strong>${fmt(p.price)}</strong>
-      <button class="btn btn-purple btn-sm add">Aggiungi</button>
+      <button class="btn btn-purple btn-sm add">${needsChoice ? "Scegli opzioni" : "Aggiungi"}</button>
     </div>`;
+  fallbackImg(card.querySelector("img"), p);
   card.onclick = () => openProduct(p.id);
-  card.querySelector(".add").onclick = (e) => { e.stopPropagation(); addToCart(p.id); flashCart(); };
+  card.querySelector(".add").onclick = (e) => {
+    e.stopPropagation();
+    if (needsChoice) openProduct(p.id); else { addToCart(p.id); flashCart(); }
+  };
   const h = card.querySelector(".heart");
   h.onclick = (e) => {
     e.stopPropagation();
@@ -69,6 +106,15 @@ function renderHome() {
   $("catMenu").innerHTML = "";
   $("footCats").innerHTML = "";
   CATEGORIES.forEach(c => {
+    if (c.soon) {
+      const sp = document.createElement("span");
+      sp.className = "soon-item"; sp.textContent = c.name + " · in arrivo";
+      $("catMenu").appendChild(sp);
+      const li0 = document.createElement("li");
+      li0.textContent = c.name + " · in arrivo";
+      $("footCats").appendChild(li0);
+      return;
+    }
     const a = document.createElement("a");
     a.href = "#catalogo"; a.textContent = c.name;
     a.onclick = () => setCategory(c.name);
@@ -82,8 +128,9 @@ function renderHome() {
   // riquadri categorie
   $("tiles").innerHTML = "";
   CATEGORIES.forEach(c => {
-    const t = document.createElement("a");
-    t.className = "tile"; t.href = "#catalogo";
+    const t = document.createElement(c.soon ? "div" : "a");
+    t.className = "tile" + (c.soon ? " soon" : "");
+    if (!c.soon) t.href = "#catalogo";
     t.style.background = c.color;
     const art = c.image ? `<img src="${c.image}" alt="${c.name}">` : `<span>${c.art || c.icon}</span>`;
     t.innerHTML = `
@@ -91,8 +138,8 @@ function renderHome() {
       <h3>${c.name}</h3>
       <p>${c.desc || ""}</p>
       <div class="tile-art">${art}</div>
-      <span class="tile-arrow">→</span>`;
-    t.onclick = () => setCategory(c.name);
+      ${c.soon ? '<span class="soon-badge">IN ARRIVO</span>' : '<span class="tile-arrow">→</span>'}`;
+    if (!c.soon) t.onclick = () => setCategory(c.name);
     $("tiles").appendChild(t);
   });
 
@@ -124,11 +171,12 @@ function resetShown() { state.shown = PAGE_SIZE; }
 
 function renderToolbar() {
   const chips = $("chips"); chips.innerHTML = "";
-  ["Tutte", ...CATEGORIES.map(c => c.name)].forEach(name => {
+  [{ name: "Tutte" }, ...CATEGORIES].forEach(c => {
+    const name = c.name;
     const b = document.createElement("button");
     b.className = "chip" + (state.category === name ? " active" : "");
-    b.textContent = name;
-    b.onclick = () => { state.category = name; resetShown(); renderToolbar(); renderGrid(); };
+    if (c.soon) { b.textContent = name + " · in arrivo"; b.disabled = true; b.classList.add("soon-chip"); }
+    else { b.textContent = name; b.onclick = () => { state.category = name; resetShown(); renderToolbar(); renderGrid(); }; }
     chips.appendChild(b);
   });
   const sel = $("brandSelect");
@@ -163,23 +211,129 @@ function renderGrid() {
 }
 
 /* ---------- Dettaglio prodotto ---------- */
+let galleryNav = null;
+
 function openProduct(id) {
   const p = PRODUCTS.find(x => x.id === id);
-  $("productDetail").innerHTML = `
-    <img src="${p.image || placeholder(p)}" alt="${p.name}">
+  const colors = colorsOf(p), sizes = sizesOf(p);
+  const sel = { color: colors.length ? 0 : -1, size: null, img: 0 };
+  const box = $("productDetail");
+
+  box.innerHTML = `
+    <div class="gallery">
+      <div class="gallery-main">
+        <img id="galImg" alt="${p.name}">
+        <button class="gal-btn prev" aria-label="Immagine precedente">‹</button>
+        <button class="gal-btn next" aria-label="Immagine successiva">›</button>
+        <span class="gal-count" id="galCount"></span>
+      </div>
+      <div class="gal-thumbs" id="galThumbs"></div>
+    </div>
     <small>${p.brand} · ${p.category}</small>
     <h2>${p.name}</h2>
     <p>${p.description}</p>
     <p class="price">${fmt(p.price)}</p>
+    ${colors.length ? `<div class="opt"><div class="opt-label">Colore: <b id="colorName"></b></div><div class="swatches" id="swatches"></div></div>` : ""}
+    ${sizes.length ? `<div class="opt"><div class="opt-label">Taglia: <b id="sizeName">—</b></div><div class="sizes" id="sizes"></div></div>` : ""}
+    <p class="opt-error" id="optError"></p>
     <button class="btn btn-purple" id="addBtn">Aggiungi alla richiesta</button>`;
-  $("addBtn").onclick = () => { addToCart(id); closeAll(); flashCart(); };
+
+  const mainImg = $("galImg");
+  const renderGallery = () => {
+    const imgs = imagesOf(p, Math.max(sel.color, 0));
+    if (sel.img >= imgs.length) sel.img = 0;
+    mainImg.src = imgs[sel.img];
+    fallbackImg(mainImg, p);
+    const multi = imgs.length > 1;
+    box.querySelector(".prev").style.display = multi ? "" : "none";
+    box.querySelector(".next").style.display = multi ? "" : "none";
+    $("galCount").style.display = multi ? "" : "none";
+    $("galCount").textContent = `${sel.img + 1} / ${imgs.length}`;
+    const th = $("galThumbs"); th.innerHTML = "";
+    if (multi) imgs.forEach((src, i) => {
+      const b = document.createElement("button");
+      b.className = "thumb" + (i === sel.img ? " active" : "");
+      b.setAttribute("aria-label", "Immagine " + (i + 1));
+      const im = document.createElement("img");
+      im.src = src; im.alt = ""; fallbackImg(im, p);
+      b.appendChild(im);
+      b.onclick = () => { sel.img = i; renderGallery(); };
+      th.appendChild(b);
+    });
+  };
+  const go = (d) => {
+    const n = imagesOf(p, Math.max(sel.color, 0)).length;
+    sel.img = (sel.img + d + n) % n;
+    renderGallery();
+  };
+  galleryNav = go;
+  box.querySelector(".prev").onclick = () => go(-1);
+  box.querySelector(".next").onclick = () => go(1);
+
+  // swipe su mobile
+  let startX = null;
+  const gm = box.querySelector(".gallery-main");
+  gm.addEventListener("touchstart", e => { startX = e.touches[0].clientX; }, { passive: true });
+  gm.addEventListener("touchend", e => {
+    if (startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+    startX = null;
+  });
+
+  // colori
+  if (colors.length) {
+    const sw = $("swatches");
+    const renderColors = () => {
+      sw.innerHTML = "";
+      colors.forEach((c, i) => {
+        const b = document.createElement("button");
+        b.className = "swatch" + (i === sel.color ? " active" : "");
+        b.style.setProperty("--c", c.hex || "#888");
+        b.title = c.name; b.setAttribute("aria-label", c.name);
+        b.onclick = () => { sel.color = i; sel.img = 0; renderColors(); renderGallery(); };
+        sw.appendChild(b);
+      });
+      $("colorName").textContent = colors[sel.color].name;
+    };
+    renderColors();
+  }
+
+  // taglie
+  if (sizes.length) {
+    const wrap = $("sizes");
+    sizes.forEach(s => {
+      const b = document.createElement("button");
+      b.className = "size"; b.textContent = s;
+      b.onclick = () => {
+        sel.size = s;
+        wrap.querySelectorAll(".size").forEach(x => x.classList.toggle("active", x === b));
+        $("sizeName").textContent = s;
+        $("optError").textContent = "";
+      };
+      wrap.appendChild(b);
+    });
+  }
+
+  renderGallery();
+  $("addBtn").onclick = () => {
+    if (sizes.length && !sel.size) { $("optError").textContent = "Seleziona una taglia."; return; }
+    addToCart(id, colors.length ? colors[sel.color].name : null, sel.size);
+    closeAll(); flashCart();
+  };
   $("productModal").classList.remove("hidden");
 }
 
 /* ---------- Richiesta (carrello) ---------- */
-function addToCart(id) {
-  const item = state.cart.find(i => i.id === id);
-  if (item) item.qty++; else state.cart.push({ id, qty: 1 });
+function optsText(item) {
+  const parts = [];
+  if (item.color) parts.push("Colore: " + item.color);
+  if (item.size) parts.push("Taglia: " + item.size);
+  return parts.join(" · ");
+}
+function addToCart(id, color = null, size = null) {
+  const item = state.cart.find(i => i.id === id && (i.color || null) === color && (i.size || null) === size);
+  if (item) item.qty++; else state.cart.push({ id, qty: 1, color, size });
   saveCart();
 }
 function flashCart() {
@@ -196,7 +350,7 @@ function renderCart() {
     const row = document.createElement("div");
     row.className = "cart-row";
     row.innerHTML = `
-      <span>${p.name} <small>(${p.brand})</small></span>
+      <span>${p.name} <small>(${p.brand})</small>${optsText(item) ? `<br><small class="opts">${optsText(item)}</small>` : ""}</span>
       <span>
         <button data-a="minus">−</button> ${item.qty}
         <button data-a="plus">+</button>
@@ -218,10 +372,11 @@ function buildMessage() {
   const name = $("customerName").value.trim() || "(nome)";
   const lines = state.cart.map(i => {
     const p = PRODUCTS.find(x => x.id === i.id);
-    return `- ${p.name} (${p.brand}) x${i.qty}`;
+    const o = [i.color ? "colore " + i.color : "", i.size ? "taglia " + i.size : ""].filter(Boolean).join(", ");
+    return `- ${p.name} (${p.brand})${o ? " - " + o : ""} x${i.qty}`;
   });
   const total = state.cart.reduce((s, i) => s + PRODUCTS.find(x => x.id === i.id).price * i.qty, 0);
-  return `Ciao, sono ${name} e vorrei questi articolui:\n${lines.join("\n")}\nTotale indicativo: ${fmt(total)}`;
+  return `Ciao, sono ${name} e vorrei questi articoli:\n${lines.join("\n")}\nTotale indicativo: ${fmt(total)}`;
 }
 
 function updateLinks() {
@@ -249,6 +404,12 @@ $("cartBtn").onclick = () => { renderCart(); $("cartModal").classList.remove("hi
 $("customerName").addEventListener("input", updateLinks);
 $("burger").onclick = () => $("mainNav").classList.toggle("open");
 $("mainNav").addEventListener("click", () => $("mainNav").classList.remove("open"));
+document.addEventListener("keydown", e => {
+  if ($("productModal").classList.contains("hidden")) return;
+  if (e.key === "ArrowLeft" && galleryNav) galleryNav(-1);
+  if (e.key === "ArrowRight" && galleryNav) galleryNav(1);
+  if (e.key === "Escape") closeAll();
+});
 document.querySelectorAll("[data-close]").forEach(b => b.onclick = closeAll);
 document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => { if (e.target === m) closeAll(); }));
 document.querySelectorAll(".arrow").forEach(a => a.onclick = () => {
