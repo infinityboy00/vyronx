@@ -21,7 +21,7 @@ const CATEGORIES = [
   { name: "Pants", soon: true, desc: "Per ogni occasione.",         icon: "", image: "img/nike2.png" , color: "#ff8a7a" },
   { name: "Jackets", soon: true,   desc: "Caldo e di tendenza.",        icon: "", image: "img/nike3.png" , color: "#9be8a8" },
   { name: "Shoes", soon: true,    desc: "Fai il passo giusto.",        icon: "",image:  "img/nike4.png", color: "#b794ff" },
-  { name: "Profumi", desc: "Fragranze iconiche.", icon: "", art: "🧴", color: "#f5b7d0" },
+  { name: "Profumi", desc: "Fragranze iconiche.",      icon: "",image:  "img/profumo.png", color: "#d8c4ac" },
   { name: "Electronic devices", desc: "Piccoli dettagli. Grande effetto.", icon: "", image:  "img/acces.png", color: "#ffb27a" }
 ];
 
