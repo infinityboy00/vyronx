@@ -78,8 +78,8 @@ img { max-width: 100%; }
 .tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
 .tile { position: relative; color: #111; border-radius: var(--radius); padding: 20px; min-height: 280px; display: flex; flex-direction: column; overflow: hidden; transition: transform .2s; }
 .tile:hover { transform: translateY(-5px); }
-.tile-icon { font-size: 26px; margin-bottom: 8px; }
-.tile h3 { margin: 0; font-size: 20px; }
+.tile-icon { font-size: 40px; margin-bottom: 8px; }
+.tile h3 { margin: 0; font-size: 25px; }
 .tile p { margin: 4px 0 0; font-size: 12px; opacity: .75; }
 .tile-art { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 84px; margin-top: 6px; }
 .tile-art img { max-height: 130px; object-fit: contain; }
@@ -89,7 +89,7 @@ img { max-width: 100%; }
 .features { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .feature { display: flex; gap: 14px; align-items: center; padding: 22px 20px; border-right: 1px solid var(--line); }
 .feature:last-child { border-right: 0; }
-.feature span { font-size: 28px; }
+.feature span { font-size: 60px; }
 .feature strong { display: block; font-size: 14px; }
 .feature small { color: var(--muted); }
 
@@ -225,3 +225,22 @@ label input { width: 100%; padding: 12px; margin-top: 6px; border: 1px solid var
 .soon-badge { position: absolute; left: 14px; bottom: 14px; background: #111; color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; padding: 7px 12px; border-radius: 999px; }
 .soon-item { display: block; padding: 9px 12px; color: var(--muted); font-size: 14px; cursor: default; }
 .chip.soon-chip { opacity: .45; cursor: not-allowed; }
+
+
+/* Categoria Puff: elenco gusti nella scheda prodotto */
+.puff-flavors { margin: 20px 0; }
+.flavor-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 24px; height: 24px; padding: 0 7px; margin-left: 6px;
+  border-radius: 999px; background: rgba(167,123,255,.18);
+  color: #cbb4ff; font-size: 12px; font-weight: 800;
+}
+.flavor-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.flavor-chip {
+  display: inline-flex; padding: 8px 11px; border: 1px solid var(--line);
+  border-radius: 999px; background: var(--panel2); color: var(--text);
+  font-size: 12px; line-height: 1.2; cursor: pointer; font-family: inherit;
+}
+.flavor-chip:hover { border-color: var(--purple); }
+.flavor-chip.active { background: var(--purple); border-color: var(--purple); color: #111; font-weight: 700; }
+.puff-flavors > small { display: block; color: var(--muted); line-height: 1.5; }

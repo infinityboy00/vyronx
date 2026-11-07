@@ -2,7 +2,7 @@
 // Cambia questi dati con i tuoi.
 const CONFIG = {
   shopName: " Vyron X",
-  whatsapp: "3715464615",          // numero con prefisso, senza + e senza spazi
+  telegram: "TUO_USERNAME",        // il tuo username Telegram, senza @ (es. "vyronx_shop")
   email: "Baderloumaissi@gmail.com",
   currency: "€",
   heroEyebrow: "FASHION / TECH / LIFESTYLE",
@@ -16,12 +16,13 @@ const CONFIG = {
 // soon: true = categoria "in arrivo" (non cliccabile, nessun prodotto)
 // icon = emoji piccola, art = emoji grande (o "image": "img/cat.png"), color = colore del riquadro
 const CATEGORIES = [
-  { name: "T-shirts", soon: true, desc: "Look freschi. Ogni giorno.",  icon: "",image: "img/nike.png" , color: "#ffe08a" },
+  { name: "T-shirt", soon: true, desc: "Look freschi. Ogni giorno.",  icon: "",image: "img/nike.png" , color: "#ffe08a" },
   { name: "Hoodie", soon: true,     desc: "Comfort e stile.",            icon: "", image: "img/nike1.png" , color: "#a9d8ff" },
   { name: "Pants", soon: true, desc: "Per ogni occasione.",         icon: "", image: "img/nike2.png" , color: "#ff8a7a" },
   { name: "Jackets", soon: true,   desc: "Caldo e di tendenza.",        icon: "", image: "img/nike3.png" , color: "#9be8a8" },
   { name: "Shoes", soon: true,    desc: "Fai il passo giusto.",        icon: "",image:  "img/nike4.png", color: "#b794ff" },
   { name: "Profumi", desc: "Fragranze iconiche.",      icon: "",image:  "img/profumo.png", color: "#d8c4ac" },
+  { name: "Puff", desc: "Modelli e gusti disponibili.", icon: "", image: "img/bangblaze1.png", color: "#933474" },
   { name: "Electronic devices", desc: "Piccoli dettagli. Grande effetto.", icon: "", image:  "img/acces.png", color: "#ffb27a" }
 ];
 
@@ -78,14 +79,16 @@ const PRODUCTS = [
       { name: "Nero", hex: "#111111", images: ["img/jbl-charge6-nero.jpg"] }
     ],
     description: "Speaker Bluetooth portatile e impermeabile con cinghia, per portare la musica ovunque." },
-  { id: 108, name: "Bang Blaze 60000 · 4 in 1", brand: "BANG BLAZE", category: "Electronic devices", price: 15, tags: ["new","best"],
+  { id: 108, name: "Bang Blaze 60000 · 4 in 1", brand: "BANG BLAZE", category: "Puff", price: 15, tags: ["new","best"],
     sizes: [],
     images: ["img/bangblaze-60000.jpg", "img/bangblaze-60000-gusti.jpg"],
-    description: "Dispositivo 4 in 1 con display digitale, ricarica Type-C e batteria da 650 mAh." },
-  { id: 109, name: "Bang Blaze 6 in 1 · 12 gusti", brand: "BANG BLAZE", category: "Electronic devices", price: 15, tags: ["new"],
+    flavors: ["Watermelon Ice", "Strawberry Lychee", "Gummy Bears", "Peach Ice", "Blueberry Watermelon", "Strawberry Lemon Ice", "Grape Ice", "Strawberry Mango", "Mixed Berries", "Blueberry Ice", "Peach Mango Watermelon", "Love 66"],
+    description: "Bang Blaze 60.000 · formato 4 in 1. Consulta i gusti disponibili e indica la tua preferenza." },
+  { id: 109, name: "Bang Blaze 6 in 1 · 12 gusti", brand: "BANG BLAZE", category: "Puff", price: 15, tags: ["new"],
     sizes: [],
     images: [ "img/bangblaze-200k.jpg", "img/bangblaze-200k-gusti.jpg"],
-    description: "Versione 6 in 1 con display digitale, disponibile in 12 gusti: scrivici quale preferisci." },
+    flavors: ["Peach Ice", "Lemon Lime", "Strawberry Watermelon", "Raspberry Grape", "Strawberry Mamba", "Cherry Pomegranate", "Watermelon Ice", "Apple Grape", "Blueberry Raspberry", "Mango Peach", "Pineapple Orange", "Blueberry Peach", "Grape Ice", "Raspberry Lemon", "Blueberry Red Bull", "Pineapple Coconut", "Strawberry Lychee", "Black Dragon Ice"],
+    description: "Bang Blaze 200.000 · formato 6 in 1. Consulta i gusti riportati nel catalogo e chiedi conferma della disponibilità." },
 
   // ---- Ultimi arrivi ---- (prezzi provvisori: cambiali con i tuoi!)
   { id: 110, name: "Apple Pencil Pro", brand: "APPLE", category: "Electronic devices", price: 20, tags: ["new","best"],

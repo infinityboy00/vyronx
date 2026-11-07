@@ -35,6 +35,7 @@ function sizesOf(p) {
   if (/accessori|electronic/.test(c)) return [];
   return DEFAULT_SIZES.clothes;
 }
+function flavorsOf(p) { return Array.isArray(p.flavors) ? p.flavors : []; }
 function colorsOf(p) { return Array.isArray(p.colors) ? p.colors : []; }
 // Immagini da mostrare: quelle del colore scelto, oppure p.images / p.image
 function imagesOf(p, colorIdx = 0) {
@@ -56,7 +57,7 @@ function makeCard(p) {
   const badge = p.tags && p.tags.includes("new") ? '<span class="tag">Novità</span>' : "";
   const liked = state.wish.includes(p.id);
   const colors = colorsOf(p);
-  const needsChoice = sizesOf(p).length > 0 || colors.length > 0;
+  const needsChoice = sizesOf(p).length > 0 || colors.length > 0 || flavorsOf(p).length > 0;
   const dots = colors.length > 1
     ? `<div class="card-colors">${colors.map(c => `<i style="--c:${c.hex || "#888"}" title="${c.name}"></i>`).join("")}</div>`
     : "";
@@ -98,7 +99,7 @@ function renderHome() {
   $("heroAccent").textContent = CONFIG.heroAccent;
   $("heroText").textContent = CONFIG.heroText;
   if (CONFIG.heroImage) $("hero").style.setProperty("--hero-img", `url("${CONFIG.heroImage}")`);
-  $("footWhatsapp").innerHTML = `<a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" rel="noopener">WhatsApp +${CONFIG.whatsapp}</a>`;
+  $("footTelegram").innerHTML = `<a href="https://t.me/${CONFIG.telegram}" target="_blank" rel="noopener">Telegram @${CONFIG.telegram}</a>`;
   $("footEmail").innerHTML = `<a href="mailto:${CONFIG.email}">${CONFIG.email}</a>`;
   $("year").textContent = new Date().getFullYear();
 
@@ -215,8 +216,8 @@ let galleryNav = null;
 
 function openProduct(id) {
   const p = PRODUCTS.find(x => x.id === id);
-  const colors = colorsOf(p), sizes = sizesOf(p);
-  const sel = { color: colors.length ? 0 : -1, size: null, img: 0 };
+  const colors = colorsOf(p), sizes = sizesOf(p), flavors = flavorsOf(p);
+  const sel = { color: colors.length ? 0 : -1, size: null, flavor: null, img: 0 };
   const box = $("productDetail");
 
   box.innerHTML = `
@@ -235,6 +236,7 @@ function openProduct(id) {
     <p class="price">${fmt(p.price)}</p>
     ${colors.length ? `<div class="opt"><div class="opt-label">Colore: <b id="colorName"></b></div><div class="swatches" id="swatches"></div></div>` : ""}
     ${sizes.length ? `<div class="opt"><div class="opt-label">Taglia: <b id="sizeName">—</b></div><div class="sizes" id="sizes"></div></div>` : ""}
+    ${flavors.length ? `<div class="opt puff-flavors"><div class="opt-label">Gusto: <b id="flavorName">—</b> <span class="flavor-count">${flavors.length}</span></div><div class="flavor-list" id="flavors"></div><small>La disponibilità può variare: chiedi conferma prima dell'ordine.</small></div>` : ""}
     <p class="opt-error" id="optError"></p>
     <button class="btn btn-purple" id="addBtn">Aggiungi alla richiesta</button>`;
 
@@ -315,10 +317,27 @@ function openProduct(id) {
     });
   }
 
+  // gusti
+  if (flavors.length) {
+    const wrap = $("flavors");
+    flavors.forEach(f => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "flavor-chip"; b.textContent = f;
+      b.onclick = () => {
+        sel.flavor = f;
+        wrap.querySelectorAll(".flavor-chip").forEach(x => x.classList.toggle("active", x === b));
+        $("flavorName").textContent = f;
+        $("optError").textContent = "";
+      };
+      wrap.appendChild(b);
+    });
+  }
+
   renderGallery();
   $("addBtn").onclick = () => {
+    if (flavors.length && !sel.flavor) { $("optError").textContent = "Seleziona un gusto."; return; }
     if (sizes.length && !sel.size) { $("optError").textContent = "Seleziona una taglia."; return; }
-    addToCart(id, colors.length ? colors[sel.color].name : null, sel.size);
+    addToCart(id, colors.length ? colors[sel.color].name : null, sel.size, sel.flavor);
     closeAll(); flashCart();
   };
   $("productModal").classList.remove("hidden");
@@ -329,11 +348,12 @@ function optsText(item) {
   const parts = [];
   if (item.color) parts.push("Colore: " + item.color);
   if (item.size) parts.push("Taglia: " + item.size);
+  if (item.flavor) parts.push("Gusto: " + item.flavor);
   return parts.join(" · ");
 }
-function addToCart(id, color = null, size = null) {
-  const item = state.cart.find(i => i.id === id && (i.color || null) === color && (i.size || null) === size);
-  if (item) item.qty++; else state.cart.push({ id, qty: 1, color, size });
+function addToCart(id, color = null, size = null, flavor = null) {
+  const item = state.cart.find(i => i.id === id && (i.color || null) === color && (i.size || null) === size && (i.flavor || null) === flavor);
+  if (item) item.qty++; else state.cart.push({ id, qty: 1, color, size, flavor });
   saveCart();
 }
 function flashCart() {
@@ -372,7 +392,7 @@ function buildMessage() {
   const name = $("customerName").value.trim() || "(nome)";
   const lines = state.cart.map(i => {
     const p = PRODUCTS.find(x => x.id === i.id);
-    const o = [i.color ? "colore " + i.color : "", i.size ? "taglia " + i.size : ""].filter(Boolean).join(", ");
+    const o = [i.color ? "colore " + i.color : "", i.size ? "taglia " + i.size : "", i.flavor ? "gusto " + i.flavor : ""].filter(Boolean).join(", ");
     return `- ${p.name} (${p.brand})${o ? " - " + o : ""} x${i.qty}`;
   });
   const total = state.cart.reduce((s, i) => s + PRODUCTS.find(x => x.id === i.id).price * i.qty, 0);
@@ -381,7 +401,7 @@ function buildMessage() {
 
 function updateLinks() {
   const msg = encodeURIComponent(buildMessage());
-  $("whatsappBtn").href = `https://wa.me/${CONFIG.whatsapp}?text=${msg}`;
+  $("telegramBtn").href = `https://t.me/${CONFIG.telegram}?text=${msg}`;
   $("emailBtn").href = `mailto:${CONFIG.email}?subject=${encodeURIComponent("Richiesta prodotti")}&body=${msg}`;
 }
 
@@ -402,6 +422,10 @@ $("sortSelect").onchange = e => { state.sort = e.target.value; renderGrid(); };
 $("moreBtn").onclick = () => { state.shown += PAGE_SIZE; renderGrid(); };
 $("cartBtn").onclick = () => { renderCart(); $("cartModal").classList.remove("hidden"); };
 $("customerName").addEventListener("input", updateLinks);
+// Ripiego: copia il messaggio negli appunti, così se Telegram non lo precompila basta incollarlo
+$("telegramBtn").addEventListener("click", () => {
+  try { navigator.clipboard && navigator.clipboard.writeText(buildMessage()); } catch (e) {}
+});
 $("burger").onclick = () => $("mainNav").classList.toggle("open");
 $("mainNav").addEventListener("click", () => $("mainNav").classList.remove("open"));
 document.addEventListener("keydown", e => {
