@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Il 
+     Negozio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <button class="burger" id="burger" aria-label="Menu">☰</button>
+    <a href="#top" class="logo" id="shopName">IL MIO NEGOZIO</a>
+    <nav class="main-nav" id="mainNav">
+      <a href="#top" class="active">Home</a>
+      <a href="#catalogo">Shop</a>
+      <div class="dropdown">
+        <a href="#categorie">Categorie ⌄</a>
+        <div class="menu" id="catMenu"></div>
+      </div>
+      <a href="#come-ordinare">Come ordinare</a>
+      <a href="#contatti">Contatti</a>
+    </nav>
+    <div class="header-tools">
+      <form class="search" id="searchForm">
+        <span class="search-icon">🔍</span>
+        <input id="search" type="search" placeholder="Cerca prodotti..." aria-label="Cerca un prodotto">
+      </form>
+      <button id="cartBtn" class="icon-btn" aria-label="Richiesta">🛍️<span id="cartCount" class="badge">0</span></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <p class="eyebrow" id="heroEyebrow"></p>
+      <h1><span id="heroTitle"></span><br><span class="grad" id="heroAccent"></span></h1>
+      <p class="hero-text" id="heroText"></p>
+      <a href="#catalogo" class="btn btn-purple">SCOPRI ORA &nbsp;→</a>
+    </div>
+    <div class="hero-side">
+      <span>FASHION</span><span>TECH</span><span>LIFESTYLE</span><i></i>
+    </div>
+  </section>
+
+  <!-- Categorie -->
+  <section class="section" id="categorie">
+    <div class="tiles" id="tiles"></div>
+  </section>
+
+  <!-- Vantaggi -->
+  <section class="section">
+    <div class="features">
+      <div class="feature"><span>💬</span><div><strong>Ordini in chat</strong><small>Scrivici su WhatsApp</small></div></div>
+      <div class="feature"><span>🛡️</span><div><strong>Nessun pagamento online</strong><small>Concordi tutto con noi</small></div></div>
+      <div class="feature"><span>🎧</span><div><strong>Assistenza diretta</strong><small>Siamo qui per te</small></div></div>
+      <div class="feature"><span>🔁</span><div><strong>Catalogo aggiornato</strong><small>Nuovi arrivi spesso</small></div></div>
+    </div>
+  </section>
+
+  <!-- Novità -->
+  <section class="section" id="novita">
+    <div class="section-head">
+      <h2 class="section-title">Novità</h2>
+      <div class="head-right">
+        <a href="#catalogo" class="view-all">Vedi tutto →</a>
+        <div class="arrows">
+          <button class="arrow" data-target="newTrack" data-dir="-1" aria-label="Indietro">‹</button>
+          <button class="arrow" data-target="newTrack" data-dir="1" aria-label="Avanti">›</button>
+        </div>
+      </div>
+    </div>
+    <div class="track" id="newTrack"></div>
+  </section>
+
+  <!-- Banner -->
+  <section class="section">
+    <div class="banner">
+      <div>
+        <h2>Ordina in pochi click</h2>
+        <p>Compila la richiesta, inviala su WhatsApp e ti rispondiamo noi.</p>
+      </div>
+      <a href="#catalogo" class="btn btn-light">Vai al catalogo</a>
+    </div>
+  </section>
+
+  <!-- In evidenza -->
+  <section class="section" id="piu-richiesti">
+    <div class="section-head">
+      <h2 class="section-title">Prodotti in evidenza</h2>
+      <div class="head-right">
+        <a href="#catalogo" class="view-all">Vedi tutto →</a>
+        <div class="arrows">
+          <button class="arrow" data-target="bestTrack" data-dir="-1" aria-label="Indietro">‹</button>
+          <button class="arrow" data-target="bestTrack" data-dir="1" aria-label="Avanti">›</button>
+        </div>
+      </div>
+    </div>
+    <div class="track" id="bestTrack"></div>
+  </section>
+
+  <!-- Marche -->
+  <section class="section">
+    <h2 class="section-title">Le nostre marche</h2>
+    <div class="brands" id="brands"></div>
+  </section>
+
+  <!-- Catalogo completo -->
+  <section class="section" id="catalogo">
+    <h2 class="section-title">Tutto il catalogo</h2>
+    <div class="toolbar">
+      <div class="chips" id="chips"></div>
+      <div class="selects">
+        <select id="brandSelect" aria-label="Marca"></select>
+        <select id="sortSelect" aria-label="Ordina">
+          <option value="default">In evidenza</option>
+          <option value="asc">Prezzo: dal più basso</option>
+          <option value="desc">Prezzo: dal più alto</option>
+          <option value="az">Nome A-Z</option>
+        </select>
+      </div>
+    </div>
+    <div id="resultInfo" class="result-info"></div>
+    <div id="grid" class="grid"></div>
+    <div class="center"><button id="moreBtn" class="btn btn-purple">Mostra altri</button></div>
+  </section>
+
+  <!-- Come ordinare -->
+  <section class="section" id="come-ordinare">
+    <h2 class="section-title">Come ordinare</h2>
+    <div class="steps">
+      <div class="step"><span>1</span><h4>Scegli</h4><p>Sfoglia il catalogo per marca e categoria.</p></div>
+      <div class="step"><span>2</span><h4>Aggiungi</h4><p>Metti i prodotti nella tua richiesta.</p></div>
+      <div class="step"><span>3</span><h4>Contattaci</h4><p>Inviaci il messaggio su WhatsApp o via email.</p></div>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="footer" id="contatti">
+  <div class="footer-grid">
+    <div>
+      <h4 id="footName">Il Mio Negozio</h4>
+      <p>Catalogo online. Nessun pagamento sul sito: ordini concordati in chat.</p>
+    </div>
+    <div>
+      <h4>Categorie</h4>
+      <ul id="footCats"></ul>
+    </div>
+    <div>
+      <h4>Aiuto</h4>
+      <ul>
+        <li><a href="#come-ordinare">Come ordinare</a></li>
+        <li><a href="#catalogo">Catalogo</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contatti</h4>
+      <ul>
+        <li id="footWhatsapp"></li>
+        <li id="footEmail"></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">&copy; <span id="year"></span> Il Mio Negozio</div>
+</footer>
+
+<!-- Dettaglio prodotto -->
+<div id="productModal" class="modal hidden">
+  <div class="modal-box">
+    <button class="close" data-close aria-label="Chiudi">&times;</button>
+    <div id="productDetail"></div>
+  </div>
+</div>
+
+<!-- Richiesta -->
+<div id="cartModal" class="modal hidden">
+  <div class="modal-box">
+    <button class="close" data-close aria-label="Chiudi">&times;</button>
+    <h2>La tua richiesta</h2>
+    <div id="cartItems"></div>
+    <label>Il tuo nome
+      <input id="customerName" type="text" placeholder="Nome e cognome">
+    </label>
+    <div class="actions">
+      <a id="whatsappBtn" class="btn btn-purple" target="_blank" rel="noopener">Invia su WhatsApp</a>
+      <a id="emailBtn" class="btn btn-light">Invia via email</a>
+    </div>
+  </div>
+</div>
+
+<script src="products.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
